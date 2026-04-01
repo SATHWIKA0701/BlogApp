@@ -17,24 +17,29 @@ const allowedOrigins = [
   "http://localhost:5173",
 ].filter(Boolean);
 
-mongoose
-  .connect(process.env.DB_URL)
-  .then(() => {
-    console.log("Database connected");
-  })
-  .catch((err) => {
-    console.log("DB connection error:", err);
-  });
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+  await mongoose.connect(process.env.DB_URL);
+  isConnected = true;
+  console.log("Database connected");
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin(origin, callback) {
       if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
+      if (allowedOrigins.includes(origin)) return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -57,10 +62,10 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error(err);
-  res
-    .status(err.status || 500)
-    .json({ message: err.message || "Internal server error" });
+  console.error("Server error:", err);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal server error",
+  });
 });
 
 export default app;
