@@ -1,0 +1,17 @@
+Backend:
+1. cd Backend
+2. npm install
+3. npm start
+
+Frontend:
+1. cd Frontend
+2. npm install
+3. npm run dev
+
+Optional:
+- Set CLIENT_URL in Backend/.env to your frontend URL if needed.
+- Set VITE_API_URL in Frontend/.env to your backend URL if needed.
+
+Notes:
+- This package excludes node_modules for portability.
+- The uploaded project included platform-specific node_modules that caused build/runtime issues.
