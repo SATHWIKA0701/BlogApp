@@ -10,11 +10,13 @@ commonRouter.post("/login", async (req, res, next) => {
   try {
     const userCred = req.body;
     const { token, user } = await authenticate(userCred);
+
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: true,
+      sameSite: "none",
     });
+
     res.status(200).json({ message: "login success", payload: user });
   } catch (err) {
     next(err);
@@ -24,8 +26,8 @@ commonRouter.post("/login", async (req, res, next) => {
 commonRouter.get("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
 
   res.status(200).json({ message: "Logged out successfully" });
@@ -34,6 +36,7 @@ commonRouter.get("/logout", (req, res) => {
 commonRouter.put("/change-password", verifyToken("USER", "AUTHOR", "ADMIN"), async (req, res, next) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
+
     if (currentPassword === newPassword) {
       return res.status(400).json({ message: "newPassword must be different from currentPassword" });
     }
