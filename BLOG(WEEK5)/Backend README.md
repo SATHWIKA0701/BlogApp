@@ -12,7 +12,7 @@ The backend handles:
 - REST APIs
 - Database operations
 - Image uploads
-- Token verification
+- Token verification  
 
 ---
 
